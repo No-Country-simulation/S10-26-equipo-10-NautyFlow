@@ -12,6 +12,9 @@ import defineLanchero from './lanchero.model.js';
 import defineZone from './zone.model.js';
 import defineBoat from './boat.model.js';
 import defineBoatAvailability from './boatAvailability.model.js';
+import defineBoatPhoto from './boatPhoto.model.js';
+import defineDocument from './document.model.js';
+
 
 // Cada archivo exporta una función; acá la ejecutamos pasándole la conexión.
 const User = defineUser(sequelize);
@@ -19,6 +22,8 @@ const Lanchero = defineLanchero(sequelize);
 const Zone = defineZone(sequelize);
 const Boat = defineBoat(sequelize);
 const BoatAvailability = defineBoatAvailability(sequelize);
+const BoatPhoto = defineBoatPhoto(sequelize);
+const Document = defineDocument(sequelize);
 
 // ── Relaciones ──
 // hasOne  = "tiene uno":   un User tiene UN Lanchero (perfil).
@@ -47,5 +52,19 @@ Zone.belongsToMany(Boat, {
 Boat.hasMany(BoatAvailability, { foreignKey: 'boatId', as: 'availability', onDelete: 'CASCADE' });
 BoatAvailability.belongsTo(Boat, { foreignKey: 'boatId', as: 'boat' });
 
+Boat.hasMany(BoatPhoto, { foreignKey: 'boatId', as: 'photos', onDelete: 'CASCADE' });
+BoatPhoto.belongsTo(Boat, {foreignKey: 'boatId', as: 'boat' });
+
+Lanchero.hasMany(Document, { foreignKey: 'lancheroId', as: 'documents', onDelete: 'CASCADE' });
+Document.belongsTo(Lanchero, { foreignKey: 'lancheroId', as: 'lanchero' });
+
+// Un documento puede ser de una lancha (el seguro). boatId puede estar vacío: licencia y antecedentes no tienen lancha.
+Boat.hasMany(Document, { foreignKey: 'boatId', as: 'documents', onDelete: 'CASCADE' });
+Document.belongsTo(Boat, { foreignKey: 'boatId', as: 'boat' });
+
+// El admin que revisó el documento. La columna no se llama userId, por eso hay que decirle cuál es.
+User.hasMany(Document, { foreignKey: 'reviewedBy', as: 'reviewedDocuments' });
+Document.belongsTo(User, { foreignKey: 'reviewedBy', as: 'reviewer' });
+
 // Exportamos todo junto para importar así: import { Boat, Zone } from '../models/index.js'
-export { sequelize, User, Lanchero, Zone, Boat, BoatAvailability };
+export { sequelize, User, Lanchero, Zone, Boat, BoatAvailability, BoatPhoto, Document };
