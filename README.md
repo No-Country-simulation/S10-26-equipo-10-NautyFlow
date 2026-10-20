@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # NautiFlow
 
 Back-office para una agencia de lanchas del Delta: verificación de lancheros, buscador de flota, viajes, reseñas con token y retornos vacíos.
